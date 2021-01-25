@@ -16,25 +16,25 @@ public class TestRun {
         members.add(new Human("Петя",1600,3));
         members.add(new Robot("R2D2", -1000,-2.3));
 
-        ArrayList<PassChelenge> chalenges =new ArrayList<>();
+        ArrayList<Chaleng> chalenges =new ArrayList<>();
         chalenges.add(new Wall(2,"Забор"));
         chalenges.add(new RunningTrack(600,"Дорожка из камня"));
         chalenges.add(new Wall(2.5,"Стена из камня"));
         chalenges.add(new RunningTrack(1500,"Асфальтная дорога"));
 
         for (Actions member : members) {
-            for (PassChelenge chalenge : chalenges) {
+            for (Chaleng chalenge : chalenges) {
                 if (!isPassChalenge(member,chalenge)) break;
             }
         }
     }
 
-    private static boolean isPassChalenge (Actions act,PassChelenge chalenge){
+    private static boolean isPassChalenge (Actions act,Chaleng chalenge){
         if(chalenge.isPassChelenge(act)){
-            System.out.printf("%s по имени %s смог пройти испытание %s \n",act.whoAreYou(),act.getName(),chalenge.getChelengeName());
+            System.out.printf("%s по имени %s смог пройти испытание %s \n",act.whoAreYou(),act.getName(),chalenge.getChalengeName());
             return true;
         }
-        System.out.printf("%s по имени %s провалил испытание %s  \n",act.whoAreYou(),act.getName(),chalenge.getChelengeName());
+        System.out.printf("%s по имени %s провалил испытание %s  \n",act.whoAreYou(),act.getName(),chalenge.getChalengeName());
         return false;
     }
 }
