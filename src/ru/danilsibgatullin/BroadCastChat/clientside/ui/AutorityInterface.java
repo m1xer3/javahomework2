@@ -1,6 +1,5 @@
-package ru.danilsibgatullin.homeworklesson7.clientside.ui;
+package ru.danilsibgatullin.BroadCastChat.clientside.ui;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
