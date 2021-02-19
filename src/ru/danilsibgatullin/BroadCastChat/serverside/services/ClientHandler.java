@@ -1,4 +1,4 @@
-package ru.danilsibgatullin.homeworklesson7.serverside.services;
+package ru.danilsibgatullin.BroadCastChat.serverside.services;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -37,6 +37,7 @@ public class ClientHandler {
                 }
 
             }).start();
+
 
         } catch (IOException e) {
             closeConnection();

@@ -1,4 +1,4 @@
-package ru.danilsibgatullin.homeworklesson7.serverside.interfaces;
+package ru.danilsibgatullin.BroadCastChat.serverside.interfaces;
 
 public interface AuthService {
     void start();

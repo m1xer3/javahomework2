@@ -1,4 +1,4 @@
-package ru.danilsibgatullin.homeworklesson7.clientside.ui;
+package ru.danilsibgatullin.BroadCastChat.clientside.ui;
 
 import javax.swing.*;
 import java.awt.*;

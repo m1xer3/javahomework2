@@ -1,6 +1,6 @@
-package ru.danilsibgatullin.homeworklesson7.serverside.services;
+package ru.danilsibgatullin.BroadCastChat.serverside.services;
 
-import ru.danilsibgatullin.homeworklesson7.serverside.interfaces.AuthService;
+import ru.danilsibgatullin.BroadCastChat.serverside.interfaces.AuthService;
 
 import java.io.IOException;
 import java.net.ServerSocket;
