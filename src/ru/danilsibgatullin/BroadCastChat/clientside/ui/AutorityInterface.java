@@ -14,31 +14,30 @@ public class AutorityInterface extends JFrame {
     private final Color elementsColor = Color.lightGray; // константа для стиля
     private final Color backgroundColor = Color.DARK_GRAY; // константа для стиля
     private JTextField logginField = new JTextField();
-    private JTextField passwordField = new JTextField();
+    private JPasswordField passwordField = new JPasswordField();
     DataInputStream  dis;
     DataOutputStream dos;
     Socket socket;
     private boolean isAutorized = false;
-    Thread authTread;
-    //Image logo;
+    JLabel picLabel = new JLabel(new ImageIcon("src/ru/danilsibgatullin/BroadCastChat/images/logo.png"));
+
 
     public AutorityInterface() throws IOException {
-
-
-        //logo = ImageIO.read();
         //задаем параметры окна
         setTitle("Authoruty to Broadcast chat");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(410,210));
-        setLocation(20,20);
+        setPreferredSize(new Dimension(400,320));
+        setLocation(100,20);
         setResizable(false);
         setBackground(backgroundColor);
 
         //Вспомогательная панель
-        //TopPanel topPanel =new TopPanel(logo);
+        JPanel topPanel =new JPanel();
+        topPanel.setPreferredSize(new Dimension(400,158));
+        topPanel.setBackground(backgroundColor);
+        topPanel.add(picLabel);
         JPanel footPanel =new JPanel();
         footPanel.setBackground(backgroundColor);
-
 
         JPanel centerPanel = new JPanel();
         centerPanel.setBackground(backgroundColor);
@@ -73,10 +72,10 @@ public class AutorityInterface extends JFrame {
         logginField.setBackground(elementsColor);
         logginField.setPreferredSize(new Dimension(50,200));
 
-
         passwordField.setText("");
         passwordField.setBackground(elementsColor);
         passwordField.setPreferredSize(new Dimension(50,200));
+        passwordField.setEchoChar('*');
 
         //Набор кнопок
         JButton connectButton = new JButton("Connect");
@@ -87,17 +86,14 @@ public class AutorityInterface extends JFrame {
         connectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
                 String server = serverField.getText().toLowerCase(Locale.ROOT);
                 Integer port = Integer.parseInt(portField.getText());
-
                 try {
                     connection(server,port);
                     if(isAutorized){
                     new ChatInterface(socket,server,port);
                     setVisible(false);
                     }
-
                 } catch (IOException  e) {
                     JOptionPane.showMessageDialog(new JDialog(),"Wrong server or port.Check your data.");
                 }
@@ -111,7 +107,6 @@ public class AutorityInterface extends JFrame {
                 System.exit(0);
             }
         });
-
 
 
         //Задаем расположение
@@ -129,7 +124,7 @@ public class AutorityInterface extends JFrame {
         centerPanel.add(passwordField);
         footPanel.add(connectButton);
         footPanel.add(closeButton);
-       // add(topPanel,BorderLayout.NORTH);
+        add(topPanel,BorderLayout.NORTH);
         add(centerPanel,BorderLayout.CENTER);
         add(footPanel,BorderLayout.SOUTH);
         pack();
@@ -146,11 +141,14 @@ public class AutorityInterface extends JFrame {
                 System.out.println(message);
                 if (message.startsWith("/authok")) {
                     isAutorized = true;
-                } else {
+                } else if (message.startsWith("/nickbusy")){
+                    JOptionPane.showMessageDialog(new JDialog(), "Nick is busy");
+                }else {
                     JOptionPane.showMessageDialog(new JDialog(), "Wrong Login or Password try agane");
                 }
             } catch (IOException ignored){
             }
     }
+
 
 }

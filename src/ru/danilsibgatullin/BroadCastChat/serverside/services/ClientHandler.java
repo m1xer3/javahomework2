@@ -12,10 +12,10 @@ public class ClientHandler {
     private Socket socket;
     private DataInputStream dis;
     private DataOutputStream dos;
-
+    private boolean isAuthorized;
+    private boolean isTimeOutCloseConnection;
+    private boolean shouldKillTimeoutMessgae;
     private String name;
-
-
 
     public ClientHandler(MyServer myServer, Socket socket) {
         try {
@@ -33,11 +33,28 @@ public class ClientHandler {
                 } catch (IOException ignored) {
                     ignored.printStackTrace();
                 } finally {
+                    if(!isTimeOutCloseConnection){
                     closeConnection();
+                    }
                 }
 
             }).start();
-
+            /*Закрываем соединение на стороне сервера если прошло 120 секунд
+            * после подключения но пользователь не авторизовался
+            */
+            new Thread(() -> {
+                try {
+                    Thread.sleep(120000);
+                System.out.println("Stream up");
+                if (!isAuthorized) {
+                    System.out.println("Timeout close connection");
+                    closeConnection();
+                }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            ).start();
 
         } catch (IOException e) {
             closeConnection();
@@ -55,13 +72,15 @@ public class ClientHandler {
                         .getNickByLoginAndPassword(arr[1], arr[2]);
                 if (nick != null) {
                     if (!myServer.isNickBusy(nick)) {
+                        isAuthorized = true;
                         sendMessage("/authok " + nick);
                         name = nick;
+                        myServer.broadcastMessage("/list::"+name);// после успешной авторизации посылаем команду всем что бы добавили к себе в лист контактов
                         myServer.broadcastMessage("Hello " + name);
                         myServer.subscribe(this);
                         return;
                     } else {
-                        sendMessage("Nick is busy");
+                        sendMessage("/nickbusy");
                     }
 
                 } else {
@@ -74,16 +93,42 @@ public class ClientHandler {
     public void readMessage() throws IOException {
         while (true) {
             try {
+
+                Thread tread = new Thread(()->{
+                    try {
+                        Thread.sleep(30000);
+                        System.out.println("Timeout for enter message");
+                        if(shouldKillTimeoutMessgae){
+                            sendMessage("/finish");
+                            isTimeOutCloseConnection=true;
+                            closeConnection();
+                            return;
+                        }
+                    } catch (InterruptedException ignore) {
+                    }
+                });
+                tread.start();
+                shouldKillTimeoutMessgae=true;
                 String messageFromClient = dis.readUTF();
-                System.out.println(name + " send message " + messageFromClient);
-                if (messageFromClient.equals("/end")) {
-                    System.out.println("Client live server");
-                    return;
+                shouldKillTimeoutMessgae=false;
+                if(tread.isAlive()){
+                    tread.interrupt();
                 }
-                if (messageFromClient.startsWith("/w")) {
-                    String[] arr = messageFromClient.split("\\s");
-                    myServer.whisperMessage(arr[1], name + "(whispered): " + messageFromClient.substring(3 + arr[1].length()));
-                } else {
+                System.out.println(name + " send message " + messageFromClient);
+                if(messageFromClient.startsWith("/")) {
+                    if (messageFromClient.equals("/end")) {
+                        System.out.println("Client live server");
+                        return;
+                    }
+                    if (messageFromClient.startsWith("/w")) {
+                        String[] arr = messageFromClient.split("\\s");
+                        myServer.whisperMessage(this, arr[1], name + "(whispered): " + messageFromClient.substring(3 + arr[1].length()));
+                    }
+                    if(messageFromClient.equals("/list")){
+                        myServer.getChatMembers();
+                    }
+                }
+                else {
                     myServer.broadcastMessage(name + ": " + messageFromClient);
                 }
             }catch (SocketException e){
