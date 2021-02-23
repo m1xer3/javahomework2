@@ -51,12 +51,22 @@ public class MyServer {
         }
     }
 
-    public synchronized void whisperMessage(String name,String message) {
+    public synchronized void whisperMessage(ClientHandler author,String name,String message) {
+        author.sendMessage(message);
         for (ClientHandler c : clients) {
             if (c.getName().equals(name)){
                 c.sendMessage(message);
             }
         }
+    }
+
+    public synchronized void getChatMembers(){
+        StringBuilder strBild = new StringBuilder();
+        strBild.append("/list::");
+        for (ClientHandler c:clients) {
+            strBild.append(c.getName()+"::");
+        }
+        broadcastMessage(strBild.toString());
     }
 
 
@@ -66,6 +76,7 @@ public class MyServer {
 
     public synchronized void unsubscribe(ClientHandler client) {
         clients.remove(client);
+        getChatMembers();
     }
 
     public boolean isNickBusy(String nick) {
